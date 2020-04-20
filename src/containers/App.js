@@ -4,10 +4,12 @@ import CardList from '../components/CardList'
 import SearchBox from '../components/SearchBox'
 import Scroll from '../components/Scroll'
 import ErrorBoundary from '../components/ErrorBoundary'
+import Header from '../components/Header'
 import './App.css'
 
 import { setSearchField, requestRobots } from '../actions'
 
+// parameter state comes from index.js provider store state(rootReducers)
 const mapStateToProps = state => ({
 	searchField: state.searchRobots.searchField,
 	robots: state.requestRobots.robots,
@@ -15,6 +17,8 @@ const mapStateToProps = state => ({
 	error: state.requestRobots.error,
 })
 
+// dispatch the DOM changes to call an action. note mapStateToProps returns object, mapDispatchToProps returns function
+// the function returns an object then uses connect to change the data from reducers.
 const mapDispatchToProps = (dispatch) => ({
 	onSearchChange: (event) => dispatch(setSearchField(event.target.value)),
 	onRequestRobots: () => dispatch(requestRobots()),
@@ -26,30 +30,26 @@ class App extends Component {
 	}
 
 	render() {
-		const { searchField, onSearchChange, robots, isPending, error } = this.props
+		const { searchField, onSearchChange, robots, isPending} = this.props
 		const filteredRobots = robots.filter((robot) => {
 			return robot.name.toLowerCase().includes(searchField.toLowerCase())
 		})
-		if (isPending) {
-			return <h1 className='tc'>Loading</h1>
-		}
-
-		if(error) {
-			return <h1 className='tc'>Ooops something went wrong</h1>
-		}
 
 		return (
 			<div className='tc'>
-				<h1 className='f1'> RoboFriends</h1>
+				<Header />
 				<SearchBox searchChange={onSearchChange}/>
 				<Scroll>
-					<ErrorBoundary>
-						<CardList robots={filteredRobots} />
-					</ErrorBoundary>
+					{ isPending ? <h1>Loading</h1> :
+						<ErrorBoundary>
+							<CardList robots={filteredRobots} />
+						</ErrorBoundary>
+					}
 				</Scroll>
 			</div>
 		)
 	}
 }
 
+// action done from mapDispatchToProps will change state from mapStateToProps
 export default connect(mapStateToProps, mapDispatchToProps)(App)
