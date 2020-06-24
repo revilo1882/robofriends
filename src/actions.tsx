@@ -5,13 +5,14 @@ import {
 	REQUEST_ROBOTS_SUCCESS,
 	REQUEST_ROBOTS_FAILED,
 } from './constants'
+import { ISearchRobotsAction } from './reducers'
 
-export const setSearchField = (text) => ({
+export const setSearchField = (text: string): ISearchRobotsAction => ({
 	type: CHANGE_SEARCH_FIELD,
 	payload: text,
 })
 
-export const requestRobots = () => (dispatch) => {
+export const requestRobots = () => (dispatch: React.Dispatch<any>): void => {
 	dispatch({ type: REQUEST_ROBOTS_PENDING })
 	apiCall('https://jsonplaceholder.typicode.com/users')
 		.then((data) => dispatch({ type: REQUEST_ROBOTS_SUCCESS, payload: data }))
